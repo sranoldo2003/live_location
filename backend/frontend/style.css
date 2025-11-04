@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+#map {
+    height: 100vh; /* Make the map take up the full viewport height */
+    width: 100vw;  /* Make the map take up the full viewport width */
+}
+
+/* --- BRUTE FORCE MARKER IMAGE FIX --- */
+/* This is necessary because of security restrictions on loading default Leaflet images from CDNs. */
+
+.leaflet-default-icon-path {
+    background-image: url('./images/marker-icon.png');
+}
+
+/* Ensure the background image path is loaded for the standard icon class */
+.leaflet-default-icon-path, .leaflet-marker-icon {
+    background-image: url('./images/marker-icon.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+
+/* This is necessary because of security restrictions on loading default Leaflet images from CDNs. */
+.leaflet-default-icon-path, .leaflet-marker-icon {
+    /* Use the same public image URL as a background-image fallback */
+    background-image: url('./images/marker-icon.png');
+    background-size: 25px 41px; 
+    background-repeat: no-repeat;
+}

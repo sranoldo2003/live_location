@@ -1,32 +1,46 @@
-// backend/server.js
-
 const express = require('express');
 const http = require('http');
 const { Server } = require("socket.io");
 const cors = require('cors');
+const path = require('path'); // NEW: Import path module for file serving
 
 const app = express();
 const server = http.createServer(app);
 
-// Use CORS to allow the frontend to connect (since they'll be on different ports)
-app.use(cors({
-    origin: "http://127.0.0.1:5500", // **IMPORTANT:** Replace with your actual frontend URL (e.g., if using Live Server)
-    methods: ["GET", "POST"]
-}));
+// --- Dynamic CORS Origin Setup for Deployment ---
+// RENDER_EXTERNAL_URL is an environment variable provided by Render.
+// It allows us to dynamically set the correct HTTPS domain for CORS.
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
+// Use the Render URL if available (deployed), otherwise use the local test URL
+const FRONTEND_ORIGIN = RENDER_EXTERNAL_URL ? RENDER_EXTERNAL_URL : 'http://127.0.0.1:5500'; 
 
-// --- Socket.IO Setup ---
+
+// 1. Serve Static Frontend Files (The 'frontend' directory is assumed to be inside 'backend')
+// The path.join(__dirname, 'frontend') points to the folder containing index.html, script.js, etc.
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// 2. CORS setup for Express and Socket.IO
+app.use(cors({ origin: FRONTEND_ORIGIN, methods: ["GET", "POST"] }));
+
 const io = new Server(server, {
     cors: {
-        origin: "http://127.0.0.1:5500", // Must match the frontend origin
+        origin: FRONTEND_ORIGIN,
         methods: ["GET", "POST"]
     }
 });
 
-// Simple room storage
-// Key: room ID, Value: Set of connected socket IDs
+
+// 3. Define the root route
+// This ensures that accessing the base URL (your Render domain) serves the index.html file.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
+
+
+// Simple room storage (no changes needed)
 const activeRooms = new Map();
 
-// --- Socket.IO Connection Handler ---
+// --- Socket.IO Connection Handler (No changes needed here) ---
 io.on('connection', (socket) => {
     console.log(`A user connected: ${socket.id}`);
 
@@ -58,7 +72,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 3. Logic for sending location updates (will be fully implemented in Module 4)
+    // 3. Logic for sending location updates 
     socket.on('locationUpdate', (data) => {
         // Find which room the socket is in (Socket.IO rooms property)
         const room = [...socket.rooms].find(r => r !== socket.id);
@@ -95,7 +109,8 @@ io.on('connection', (socket) => {
 });
 
 // --- Server Start ---
-const PORT = process.env.PORT || 3000;
+// Use the port provided by the environment (Render), or default to 10000
+const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
