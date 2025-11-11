@@ -1,3 +1,4 @@
+
 body {
     margin: 0;
     padding: 0;
@@ -29,4 +30,68 @@ body {
     background-image: url('./images/marker-icon.png');
     background-size: 25px 41px; 
     background-repeat: no-repeat;
+}
+
+/* Name labels above markers */
+.leaflet-tooltip.name-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 4px;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  text-shadow: 0 0 2px #ffffff, 0 0 4px #ffffff; /* readable on maps */
+}
+
+
+
+
+.pin-marker {
+  --pin-color: hsl(210, 85%, 50%);
+  position: relative;
+  width: 22px;
+  height: 22px;
+  background: var(--pin-color);
+  border-radius: 50% 50% 50% 0;         /* teardrop shape */
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+
+/* the point */
+.pin-marker::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  right: 6px;
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-top-color: var(--pin-color);
+  transform: rotate(45deg);
+  filter: brightness(0.9);
+}
+
+/* inner white dot */
+.pin-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(45deg); /* compensate parent rotate */
+}
+
+/* Name labels above markers */
+.leaflet-tooltip.name-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 4px;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  text-shadow: 0 0 2px #ffffff, 0 0 4px #ffffff;
 }
